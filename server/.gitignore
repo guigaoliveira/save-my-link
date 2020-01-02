@@ -1,4 +1,3 @@
 node_modules/
-!assets/.gitkeep
-!assets/favicons/.gitkeep
+src/assets/*
 database.sqlite
