@@ -5,7 +5,8 @@ import {
   List,
   ListItem,
   Typography,
-  CircularProgress
+  CircularProgress,
+  Link
 } from "@material-ui/core";
 import { useQuery } from "@apollo/react-hooks";
 import LinkOffIcon from "@material-ui/icons/LinkOff";
@@ -81,7 +82,11 @@ const LinkListItem: React.FC<LinkListItemProps> = ({ data }) => {
       ) : (
         <LinkOffIcon className={classes.icon} style={{ fontSize: 16 }} />
       )}
-      <a href={data.href}>{data.href}</a>
+      <Typography>
+        <Link href={data.href} target="_blank" rel="noreferrer">
+          {data.href}
+        </Link>
+      </Typography>
     </ListItem>
   );
 };
@@ -119,6 +124,9 @@ const LinkList: React.FC = () => {
       )}
       {data && !!data.links.length && (
         <Grid className={classes.grid}>
+          <Typography variant="h6" gutterBottom>
+            Seus links
+          </Typography>
           <List>
             {data.links.map(link => (
               <LinkListItem key={link.id} data={link} />
