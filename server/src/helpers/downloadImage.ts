@@ -38,12 +38,8 @@ async function downloadImage({
 
     const writer = fs.createWriteStream(filepath);
 
-    const url = targetUrl.startsWith("//")
-      ? targetUrl.replace("//", "https://")
-      : targetUrl;
-
     const response = await axios({
-      url,
+      url: targetUrl,
       method: "GET",
       responseType: "stream"
     });
@@ -53,7 +49,6 @@ async function downloadImage({
     return new Promise((resolve, reject) => {
       writer.on("finish", resolve);
       writer.on("error", () => {
-        console.log("err");
         deleteFile(filepath).then(reject);
       });
     });

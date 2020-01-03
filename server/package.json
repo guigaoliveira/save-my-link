@@ -10,7 +10,6 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "graphql": "^14.5.8",
-    "htmlparser2": "^4.0.0",
     "sqlite3": "^4.1.1",
     "type-graphql": "^0.17.6",
     "typeorm": "^0.2.22",
@@ -18,14 +17,21 @@
   },
   "scripts": {
     "start": "nodemon --exec ts-node src/index.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "commit": "npx git-cz"
   },
   "devDependencies": {
     "@types/express": "^4.17.2",
     "@types/graphql": "^14.5.0",
     "@types/node": "^13.1.1",
+    "cz-conventional-changelog": "^3.0.2",
     "ts-node": "^8.5.4",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.7.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }
