@@ -6,11 +6,13 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
-  BeforeUpdate
+  BeforeUpdate,
+  OneToMany
 } from "typeorm";
-import { Field, ID, ObjectType } from "type-graphql";
-
+import { Field, ID, ObjectType, InputType } from "type-graphql";
+import { Tag } from "./Tag";
 @ObjectType()
+@InputType("LinkInput")
 @Entity()
 export class Link extends BaseEntity {
   @Field(() => ID)
@@ -29,9 +31,19 @@ export class Link extends BaseEntity {
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Field()
+  @Field({ nullable: true })
   @UpdateDateColumn()
   updatedAt?: Date;
+
+  @Field(() => [Tag], { nullable: true })
+  @OneToMany(
+    () => Tag,
+    tags => tags.link,
+    {
+      cascade: ["insert", "update"]
+    }
+  )
+  tags?: Tag[];
 
   @BeforeInsert()
   updateDateCreation() {

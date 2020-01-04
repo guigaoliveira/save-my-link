@@ -6,21 +6,31 @@ import {
   InputType,
   Mutation,
   Query,
-  Resolver
+  Resolver,
+  ArgsType
 } from "type-graphql";
 import uuidv5 from "uuid/v5";
 import { Link } from "../entity/Link";
+import { Tag } from "../entity/Tag";
 import downloadImage from "../helpers/downloadImage";
 import getMetadata from "../helpers/getMetadata";
 
 @InputType()
-class LinkInput {
+class CreateLinkTagsInput {
   @Field()
-  href!: string;
+  name!: string;
 }
 
 @InputType()
-class LinkUpdateInput {
+class CreateLinkInput {
+  @Field()
+  href!: string;
+  @Field(() => [CreateLinkTagsInput], { nullable: true })
+  tags?: CreateLinkTagsInput[];
+}
+
+@InputType()
+class UpdateLinkInput {
   @Field()
   href?: string;
 }
@@ -28,7 +38,9 @@ class LinkUpdateInput {
 @Resolver()
 export class LinkResolver {
   @Mutation(() => Link)
-  async createLink(@Arg("input", () => LinkInput) input: LinkInput) {
+  async createLink(
+    @Arg("input", () => CreateLinkInput) input: CreateLinkInput
+  ) {
     try {
       const { faviconUrl } = await getMetadata({ targetUrl: input.href });
       let imageFileName = "";
@@ -53,7 +65,7 @@ export class LinkResolver {
         ...input,
         faviconFileName: imageFileName
       }).save();
-
+      console.log(link);
       return link;
     } catch (err) {
       console.log(err);
@@ -63,7 +75,7 @@ export class LinkResolver {
   @Mutation(() => Boolean)
   async updateLink(
     @Arg("id", () => ID) id: string,
-    @Arg("input", () => LinkUpdateInput) input: LinkUpdateInput
+    @Arg("input", () => UpdateLinkInput) input: UpdateLinkInput
   ) {
     await Link.update({ id }, input);
     return true;
