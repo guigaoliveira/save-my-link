@@ -11,7 +11,6 @@ import {
 } from "type-graphql";
 import uuidv5 from "uuid/v5";
 import { Link } from "../entity/Link";
-import { Tag } from "../entity/Tag";
 import downloadImage from "../helpers/downloadImage";
 import getMetadata from "../helpers/getMetadata";
 
@@ -87,7 +86,8 @@ export class LinkResolver {
     return Link.find({
       order: {
         createdAt: "DESC"
-      }
+      },
+      relations: ["tags"]
     });
   }
 }

@@ -5,6 +5,10 @@ const linkFragment = gql`
     id
     href
     faviconFileName
+    tags {
+      id
+      name
+    }
   }
 `;
 
@@ -18,8 +22,8 @@ export const GET_LINKS = gql`
 `;
 
 export const CREATE_LINK = gql`
-  mutation CreateLink($href: String!) {
-    createLink(input: { href: $href }) {
+  mutation CreateLink($href: String!, $tags: [CreateLinkTagsInput!]) {
+    createLink(input: { href: $href, tags: $tags }) {
       ...LinkData
     }
   }

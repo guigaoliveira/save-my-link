@@ -6,16 +6,23 @@ import {
   ListItem,
   Typography,
   CircularProgress,
-  Link
+  Link,
+  Chip
 } from "@material-ui/core";
 import { useQuery } from "@apollo/react-hooks";
 import LinkOffIcon from "@material-ui/icons/LinkOff";
 import { GET_LINKS } from "../../graphql";
 
+interface Tag {
+  id: string;
+  name: string;
+}
+
 interface Link {
   id: number;
   href: string;
   faviconFileName: string;
+  tags?: [Tag];
 }
 
 interface LinkData {
@@ -56,37 +63,56 @@ const useStyles = makeStyles((theme: Theme) =>
       wordBreak: "break-all"
     },
     icon: {
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
+      fontSize: 16
+    },
+    listItem: {
+      justifyContent: "space-between"
+    },
+    chipGrid: {
+      display: "grid",
+      gridAutoFlow: "column",
+      gridGap: theme.spacing(0.5)
     }
   })
 );
 
 const LinkListItem: React.FC<LinkListItemProps> = ({ data }) => {
   const classes = useStyles();
+
   return (
-    <ListItem disableGutters>
-      {data.faviconFileName ? (
-        <img
-          src={
-            process.env.REACT_APP_SERVER_HOST +
-            "/" +
-            process.env.REACT_APP_FAVICONS_PATH +
-            "/" +
-            data.faviconFileName
-          }
-          alt=""
-          className={classes.icon}
-          width={16}
-          height={16}
-        />
-      ) : (
-        <LinkOffIcon className={classes.icon} style={{ fontSize: 16 }} />
+    <ListItem className={classes.listItem} disableGutters>
+      <div>
+        {data.faviconFileName ? (
+          <img
+            src={
+              process.env.REACT_APP_SERVER_HOST +
+              "/" +
+              process.env.REACT_APP_FAVICONS_PATH +
+              "/" +
+              data.faviconFileName
+            }
+            alt=""
+            className={classes.icon}
+            width={16}
+            height={16}
+          />
+        ) : (
+          <LinkOffIcon className={classes.icon} />
+        )}
+        <Typography display="inline">
+          <Link href={data.href} target="_blank" rel="noreferrer">
+            {data.href}
+          </Link>
+        </Typography>
+      </div>
+      {data.tags && (
+        <div className={classes.chipGrid}>
+          {data.tags.map(tag => (
+            <Chip key={tag.id} label={tag.name} size="small" />
+          ))}
+        </div>
       )}
-      <Typography>
-        <Link href={data.href} target="_blank" rel="noreferrer">
-          {data.href}
-        </Link>
-      </Typography>
     </ListItem>
   );
 };
@@ -125,9 +151,9 @@ const LinkList: React.FC = () => {
       {data && !!data.links.length && (
         <Grid className={classes.grid}>
           <Typography variant="h6" gutterBottom>
-            Seus links
+            Meus links
           </Typography>
-          <List>
+          <List disablePadding>
             {data.links.map(link => (
               <LinkListItem key={link.id} data={link} />
             ))}

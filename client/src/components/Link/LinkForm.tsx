@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Chip, Button, TextField, CircularProgress } from "@material-ui/core";
-import Autocomplete from "@material-ui/lab/Autocomplete";
+import { Button, TextField, CircularProgress } from "@material-ui/core";
 import { useMutation } from "@apollo/react-hooks";
 import { GET_LINKS, CREATE_LINK } from "../../graphql";
 
@@ -27,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) =>
       marginTop: -12,
       marginLeft: -12
     },
-    autoComplete: {
+    inputTags: {
       marginTop: theme.spacing(1.5)
     }
   })
@@ -37,6 +36,7 @@ const LinkForm: React.FC = () => {
   const classes = useStyles();
 
   const [link, setLink] = useState("");
+  const [tags, setTags] = useState("");
 
   const [createLink, { loading, error }] = useMutation(CREATE_LINK, {
     update(cache, { data: { createLink } }) {
@@ -56,7 +56,12 @@ const LinkForm: React.FC = () => {
         autoComplete="off"
         onSubmit={e => {
           e.preventDefault();
-          createLink({ variables: { href: link } });
+          createLink({
+            variables: {
+              href: link,
+              tags: tags ? tags.split(",").map(name => ({ name })) : []
+            }
+          });
         }}
       >
         <TextField
@@ -65,28 +70,12 @@ const LinkForm: React.FC = () => {
           variant="outlined"
           onChange={e => setLink(e.target.value)}
         />
-        <Autocomplete
-          className={classes.autoComplete}
-          multiple
-          options={[]}
-          renderTags={(value, getTagProps) =>
-            value.map((option: any, index: number) => (
-              <Chip
-                disabled={index === 0}
-                label={option.title}
-                {...getTagProps({ index })}
-              />
-            ))
-          }
-          renderInput={params => (
-            <TextField
-              {...params}
-              label="Fixed tag"
-              variant="outlined"
-              placeholder="Favorites"
-              fullWidth
-            />
-          )}
+        <TextField
+          label="Tags"
+          fullWidth
+          variant="outlined"
+          onChange={e => setTags(e.target.value)}
+          className={classes.inputTags}
         />
         <div className={classes.containerButton}>
           <Button
