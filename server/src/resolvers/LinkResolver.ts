@@ -42,34 +42,29 @@ export class LinkResolver {
     @Arg("input", () => CreateLinkInput) input: CreateLinkInput
   ) {
     try {
-      const { faviconUrl } = await getMetadata({ targetUrl: input.href });
-      let imageFileName = "";
+      const { faviconUrl } = getMetadata({ targetUrl: input.href });
 
-      if (faviconUrl) {
-        try {
-          imageFileName = `${uuidv5(faviconUrl, uuidv5.URL)}${path.extname(
-            faviconUrl
-          )}`;
+      let imageFileName = `${uuidv5(faviconUrl, uuidv5.URL)}${path.extname(
+        faviconUrl
+      )}`;
 
-          await downloadImage({
-            targetUrl: faviconUrl,
-            imageDestination: "./assets/favicons",
-            imageFileName
-          });
-        } catch (e) {
-          imageFileName = "";
-        }
+      try {
+        await downloadImage({
+          targetUrl: faviconUrl,
+          imageDestination: "./assets/favicons",
+          imageFileName
+        });
+      } catch (e) {
+        imageFileName = "";
       }
 
       const link = await Link.create({
         ...input,
         faviconFileName: imageFileName
       }).save();
-      console.log(link);
+
       return link;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 
   @Mutation(() => Boolean)
